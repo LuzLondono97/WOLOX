@@ -25,13 +25,13 @@ public class Photo implements Serializable {
 
     private static final long serialVersionUID = 8799656478674716636L;
 
+    @Column(nullable = false)
+    private Long albumId;
+
     @Id
     @Column(nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(nullable = false)
-    private Long albumId;
 
     @Column(nullable = false)
     private String title;
