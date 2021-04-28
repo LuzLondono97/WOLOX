@@ -66,7 +66,7 @@ public class AlbumUserService {
         return null;
     }
 
-    public AlbumUser updatePermissionsAlbum(Long albumId, Long userId, Long accessTypeId) throws Exception {
+    public AlbumUser updateAlbumPermissions(Long albumId, Long userId, Long accessTypeId) throws Exception {
         AccessType accessType = AccessType.getByIdAccess(accessTypeId);
 
         if (accessType.equals(AccessType.UNKNOWN)) {

@@ -27,10 +27,10 @@ public class AlbumUserController {
         }
     }
 
-    @PutMapping("/updatePermissionsAlbum")
-    public ResponseEntity<AlbumUser> updatePermissionsAlbum(@PathParam("albumId") Long albumId, @PathParam("userId") Long userId, @PathParam("accessTypeId") Long accessTypeId) throws Exception {
+    @PutMapping("/updateAlbumPermissions")
+    public ResponseEntity<AlbumUser> updateAlbumPermissions(@PathParam("albumId") Long albumId, @PathParam("userId") Long userId, @PathParam("accessTypeId") Long accessTypeId) throws Exception {
         try {
-            return ResponseEntity.ok(albumUserService.updatePermissionsAlbum(albumId, userId, accessTypeId));
+            return ResponseEntity.ok(albumUserService.updateAlbumPermissions(albumId, userId, accessTypeId));
         } catch (Exception e) {
             throw new Exception("No tiene permisos para añadir el Album");
         }
