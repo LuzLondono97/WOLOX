@@ -10,7 +10,9 @@ import com.project.wchallenge.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class AlbumUserService {
@@ -27,63 +29,82 @@ public class AlbumUserService {
     }
 
     private Boolean existsAlbumUser(Long albumId, Long userId) {
-        return albumUserRepository.existsAlbumUserByAlbum_IdAndUser_Id(albumId, userId);
-    }
-
-    private User userVerified(User user) {
-        Optional<User> userVerified = userRepository.findById(user.getId());
-        return userVerified.orElseGet(() -> userRepository.save(user));
-    }
-
-    private Album albumVerified(Album album) {
-        Optional<Album> albumVerified = albumRepository.findById(album.getId());
-        return albumVerified.orElseGet(() -> albumRepository.save(album));
+        Optional<AlbumUser> albumUser = albumUserRepository.findByAlbumIdAndUserId(albumId, userId);
+        Boolean result = false;
+        if (albumUser.isPresent()) {
+            result = true;
+        }
+        return result;
     }
 
     public AlbumUser addAlbumUser(Long albumId, Long userId, Long accessTypeId) throws Exception {
-        Optional<User> user = userRepository.findById(userId);
-        Optional<Album> album = albumRepository.findById(albumId);
+        if (null == albumId || null == userId || null == accessTypeId) {
+            throw new Exception("El album, usuario y permiso no pueden ser nulo");
+        }
 
         AccessType accessType = AccessType.getByIdAccess(accessTypeId);
-        if (accessType.equals(AccessType.UNKNOWN)) {
-            throw new Exception("idAccessType " + accessType);
+        if (accessType.equals(AccessType.NO_ACCESS)) {
+            throw new Exception("accessType " + accessType);
         }
 
+        Optional<User> user = userRepository.findById(userId);
+        Optional<Album> album = albumRepository.findById(albumId);
         if (user.isPresent() && album.isPresent()) {
-            Long idAlbum = album.get().getId();
-            Long idUser = user.get().getId();
-            Long idAlbumUser = album.get().getUserId();
-
-            if (!this.existsAlbumUser(idAlbum, idUser) && !idAlbumUser.equals(idUser)) {
-                User userEntity = userVerified(user.get());
-                Album albumEntity = albumVerified(album.get());
-
-                AlbumUser albumUser = AlbumUser.builder().user(userEntity).album(albumEntity).accessType(accessType).build();
+            if (!this.existsAlbumUser(albumId, userId)) {
+                AlbumUser albumUser = AlbumUser.builder()
+                        .userId(userId)
+                        .albumId(albumId)
+                        .accessType(accessType)
+                        .build();
                 return albumUserRepository.save(albumUser);
+            } else {
+                throw new Exception("Ya existe un registro para este album y usuario");
             }
+        } else {
+            throw new Exception("El usuario o album no existe");
         }
-
-        return null;
     }
 
     public AlbumUser updateAlbumPermissions(Long albumId, Long userId, Long accessTypeId) throws Exception {
-        AccessType accessType = AccessType.getByIdAccess(accessTypeId);
-
-        if (accessType.equals(AccessType.UNKNOWN)) {
-            throw new Exception("idAccessType " + accessTypeId);
+        if (null == albumId || null == userId || null == accessTypeId) {
+            throw new Exception("El album, usuario y permiso no pueden ser nulo");
         }
 
-        AlbumUser albumUser = albumUserRepository.findByAlbumIdAndUserId(albumId, userId)
-                .orElseThrow(() -> new Exception("idAlbum" + (albumId + ", idUser " + userId)));
+        AccessType accessType = AccessType.getByIdAccess(accessTypeId);
+        if (accessType.equals(AccessType.NO_ACCESS)) {
+            throw new Exception("accessType " + accessType);
+        }
 
+        Optional<User> user = userRepository.findById(userId);
+        Optional<Album> album = albumRepository.findById(albumId);
+        if (user.isPresent() && album.isPresent()) {
+            if (this.existsAlbumUser(albumId, userId)) {
+                AlbumUser albumUser = AlbumUser.builder()
+                        .userId(userId)
+                        .albumId(albumId)
+                        .accessType(accessType)
+                        .build();
+                return albumUserRepository.save(albumUser);
+            } else {
+                throw new Exception("No existe un registro para este album y usuario");
+            }
+        } else {
+            throw new Exception("El usuario o album no existe");
+        }
+    }
 
-        AlbumUser albumUserSave = AlbumUser.builder()
-                .album(albumUser.getAlbum())
-                .user(albumUser.getUser())
-                .accessType(accessType)
-                .build();
+    public List<User> getUsersPermissionsAlbum(Long albumId, Long accessTypeId) throws Exception {
+        AccessType accessType = AccessType.getByIdAccess(accessTypeId);
+        if (accessType.equals(AccessType.NO_ACCESS)) {
+            throw new Exception("accessType " + accessType);
+        }
 
-        return albumUserRepository.save(albumUserSave);
+        List<User> user = userRepository.findByAlbumIdAndPermissions(albumId, accessType);
+        if (null != user || !"".equals(user)) {
+            return user.stream().collect(Collectors.toList());
+        } else {
+            throw new Exception("No existe un usuario con este album y estos permisos");
+        }
     }
 
 }

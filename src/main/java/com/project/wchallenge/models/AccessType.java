@@ -2,23 +2,25 @@ package com.project.wchallenge.models;
 
 public enum AccessType {
 
-    READ(1L),
-    WRITE(2L),
-    READ_WRITE(3L),
-    UNKNOWN(0L);
+    CREATE(1L), UPDATE(2L), DELETE(3L), FIND(4L), NO_ACCESS(0L);
 
     private Long idAccess;
 
-    AccessType(Long idAccess) {
+    private AccessType(Long idAccess) {
         this.idAccess = idAccess;
+    }
+
+    public Long getIdAccess() {
+        return idAccess;
     }
 
     public static AccessType getByIdAccess(Long idAccess) {
         for (AccessType accessType : values()) {
-            if (accessType.idAccess.equals(idAccess)) {
+            Long valueIdAccess = accessType.idAccess;
+            if (valueIdAccess.equals(idAccess)) {
                 return accessType;
             }
         }
-        return UNKNOWN;
+        return NO_ACCESS;
     }
 }

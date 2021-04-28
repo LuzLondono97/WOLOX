@@ -31,13 +31,11 @@ public class AlbumUser implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @SuppressWarnings("JpaAttributeTypeInspection")
-    @Column(nullable = false)
-    private Album album;
+    @Column(nullable = false, name = "album_id")
+    private Long albumId;
 
-    @SuppressWarnings("JpaAttributeTypeInspection")
-    @Column(nullable = false)
-    private User user;
+    @Column(nullable = false, name = "user_id")
+    private Long userId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, name = "access_type")

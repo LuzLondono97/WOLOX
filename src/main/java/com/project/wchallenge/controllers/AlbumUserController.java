@@ -23,7 +23,7 @@ public class AlbumUserController {
         try {
             return ResponseEntity.ok(albumUserService.addAlbumUser(albumId, userId, accessTypeId));
         } catch (Exception e) {
-            throw new Exception("No tiene permisos para añadir el Album");
+            throw new Exception("No tiene permisos para añadir el Album Usuario");
         }
     }
 
@@ -32,7 +32,7 @@ public class AlbumUserController {
         try {
             return ResponseEntity.ok(albumUserService.updateAlbumPermissions(albumId, userId, accessTypeId));
         } catch (Exception e) {
-            throw new Exception("No tiene permisos para añadir el Album");
+            throw new Exception("No tiene permisos para modificar el Album Usuario");
         }
     }
 
