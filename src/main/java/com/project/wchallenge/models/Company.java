@@ -33,7 +33,7 @@ public class Company implements Serializable {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "catch_phrase")
     private String catchPhrase;
 
     @Column(nullable = false)

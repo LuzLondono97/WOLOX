@@ -40,5 +40,6 @@ public class AlbumUser implements Serializable {
     private User user;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, name = "access_type")
     private AccessType accessType;
 }

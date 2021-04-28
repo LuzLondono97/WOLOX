@@ -39,7 +39,7 @@ public class Photo implements Serializable {
     @Column(nullable = false)
     private String url;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "thumbnail_url")
     private String thumbnailUrl;
 
 }
