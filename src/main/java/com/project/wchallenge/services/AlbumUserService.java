@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 @Service
 public class AlbumUserService {
@@ -65,6 +64,26 @@ public class AlbumUserService {
         }
 
         return null;
+    }
+
+    public AlbumUser updatePermissionsAlbum(Long albumId, Long userId, Long accessTypeId) throws Exception {
+        AccessType accessType = AccessType.getByIdAccess(accessTypeId);
+
+        if (accessType.equals(AccessType.UNKNOWN)) {
+            throw new Exception("idAccessType " + accessTypeId);
+        }
+
+        AlbumUser albumUser = albumUserRepository.findByAlbumIdAndUserId(albumId, userId)
+                .orElseThrow(() -> new Exception("idAlbum" + (albumId + ", idUser " + userId)));
+
+
+        AlbumUser albumUserSave = AlbumUser.builder()
+                .album(albumUser.getAlbum())
+                .user(albumUser.getUser())
+                .accessType(accessType)
+                .build();
+
+        return albumUserRepository.save(albumUserSave);
     }
 
 }
